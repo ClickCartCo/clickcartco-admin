@@ -1,15 +1,16 @@
 import axios from "axios";
-import { base_url } from "../../utils/baseUrl";
 import { config } from "../../utils/axiosconfig";
 
 const getProductCategories = async () => {
-  const response = await axios.get(`${base_url}/api/category/get-all-category`);
+  const response = await axios.get(
+    `${process.env.REACT_APP_API_BASE_URL}/api/category/get-all-category`
+  );
 
   return response.data;
 };
 const createCategory = async (category) => {
   const response = await axios.post(
-    `${base_url}/api/category/create-category`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/category/create-category`,
     category,
     config
   );
@@ -19,7 +20,7 @@ const createCategory = async (category) => {
 
 const getProductCategory = async (id) => {
   const response = await axios.get(
-    `${base_url}/api/category/get-all-category/${id}`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/category/get-all-category/${id}`,
     config
   );
 
@@ -28,7 +29,7 @@ const getProductCategory = async (id) => {
 
 const updateProductCategory = async (category) => {
   const response = await axios.put(
-    `${base_url}/api/category/update-category/${category.id}`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/category/update-category/${category.id}`,
     { updateFields: { name: category.pCatData.name } },
     config
   );
@@ -38,7 +39,7 @@ const updateProductCategory = async (category) => {
 
 const deleteProductCategory = async (id) => {
   const response = await axios.delete(
-    `${base_url}/api/category/delete-category/${id}`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/category/delete-category/${id}`,
     config
   );
 
