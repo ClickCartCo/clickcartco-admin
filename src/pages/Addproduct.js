@@ -41,6 +41,8 @@ const Addproduct = () => {
   const { isSuccess, isError, isLoading, createdProduct } = newProduct;
   const [specificationName, setSpecificationName] = useState("");
   const [fields, setFields] = useState({});
+  const [productAttrName, setProductAttrName] = useState("");
+  const [productAttribute, setProductAttribute] = useState({});
 
   const addField = () => {
     const newKey = specificationName;
@@ -51,15 +53,36 @@ const Addproduct = () => {
     setSpecificationName("");
   };
 
+  const addDynamicField = () => {
+    const newKey = productAttrName;
+    setProductAttribute({
+      ...productAttribute,
+      [newKey]: [],
+    });
+    setProductAttrName("");
+  };
+
   const removeField = (key) => {
     const { [key]: _, ...updatedFields } = fields;
     setFields(updatedFields);
+  };
+
+  const removeDynamicField = (key) => {
+    const { [key]: _, ...updatedFields } = productAttribute;
+    setProductAttribute(updatedFields);
   };
 
   const handleChangeValue = (key, value) => {
     setFields({
       ...fields,
       [key]: value,
+    });
+  };
+
+  const handleFieldChangevalue = (key, value) => {
+    setProductAttribute({
+      ...productAttribute,
+      [key]: value.split(","),
     });
   };
 
@@ -89,10 +112,14 @@ const Addproduct = () => {
     onSubmit: (values) => {
       values.color = values.color.split(",");
       values.images = values.images.split(",");
-      values = { ...values, specifications: { ...fields } };
+      values = {
+        ...values,
+        specifications: { ...fields },
+        productAttributes: { ...productAttribute },
+      };
       dispatch(createProducts(values));
       setFields({});
-      formik.values.color = "";
+      setProductAttribute({});
       formik.resetForm();
       setTimeout(() => {
         dispatch(resetState());
@@ -229,6 +256,52 @@ const Addproduct = () => {
           />
           <div className="error">
             {formik.touched.color && formik.errors.color}
+          </div>
+          <div>
+            <div className="row-g-3">
+              <div className="col-auto">
+                <h4>Add Dynamic Fields(Size, Colors, etc)</h4>
+              </div>
+              <div className="col-auto">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder={`Dynamic Fields`}
+                  value={productAttrName}
+                  onChange={(e) => setProductAttrName(e.target.value)}
+                />
+              </div>
+              <div className="col-auto mt-2">
+                <button
+                  className="btn btn-primary"
+                  onClick={addDynamicField}
+                  disabled={!productAttrName}
+                >
+                  Add Field
+                </button>
+              </div>
+            </div>
+            {Object.entries(productAttribute).map(([key, value]) => (
+              <div key={key} className="mt-3">
+                <input
+                  type="text"
+                  placeholder={`Specification ${key.slice(13)}`}
+                  value={key}
+                  disabled
+                />
+                <input
+                  type="text"
+                  placeholder={`Value for Specification ${key.slice(13)}`}
+                  onChange={(e) => handleFieldChangevalue(key, e.target.value)}
+                />
+                <button
+                  className="btn btn-danger ms-2"
+                  onClick={() => removeDynamicField(key)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
           <select
             name="tags"

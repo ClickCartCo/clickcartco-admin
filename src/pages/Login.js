@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CustomInput from "../components/CustomInput";
 import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -23,20 +23,21 @@ const Login = () => {
     },
     validationSchema: schema,
     onSubmit: (values) => {
-      dispatch(login(values));
+      dispatch(login(values))
+        .then(() => {
+          navigate("/admin"); // Navigate upon successful login
+        })
+        .catch((error) => {});
     },
   });
-  const authState = useSelector((state) => state);
-
-  const { user, isError, isSuccess, isLoading, message } = authState.auth;
+  const { user, message } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isSuccess) {
-      navigate("admin");
-    } else {
-      navigate("");
+    if (user) {
+      navigate("/admin");
     }
-  }, [user, isError, isSuccess, isLoading]);
+  }, []);
+
   return (
     <div className="py-5" style={{ background: "#ffd333", minHeight: "100vh" }}>
       <br />
@@ -48,7 +49,7 @@ const Login = () => {
         <h3 className="text-center title">Login</h3>
         <p className="text-center">Login to your account to continue.</p>
         <div className="error text-center">
-          {message.message == "Rejected" ? "You are not an Admin" : ""}
+          {message.message == "Rejected" ? "You are not an Admin" : message}
         </div>
         <form action="" onSubmit={formik.handleSubmit}>
           <CustomInput

@@ -3,8 +3,9 @@ import { Table } from "antd";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../features/product/productSlice";
+import { deleteProduct, getProducts } from "../features/product/productSlice";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 const columns = [
   {
     title: "SNo",
@@ -45,6 +46,7 @@ const Productlist = () => {
   useEffect(() => {
     dispatch(getProducts());
   }, []);
+
   const productState = useSelector((state) => state.product.products);
   const data1 = [];
   for (let i = 0; i < productState.length; i++) {
@@ -60,7 +62,10 @@ const Productlist = () => {
           <Link to="/" className=" fs-3 text-danger">
             <BiEdit />
           </Link>
-          <Link className="ms-3 fs-3 text-danger" to="/">
+          <Link
+            className="ms-3 fs-3 text-danger"
+            onClick={() => dispatch(deleteProduct(productState[i]._id))}
+          >
             <AiFillDelete />
           </Link>
         </>

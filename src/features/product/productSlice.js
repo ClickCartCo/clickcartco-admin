@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import productService from "./productService";
+import { checkTokenExpired } from "../../common/utils";
+import { signout } from "../auth/authSlice";
 
 export const getProducts = createAsyncThunk(
   "product/get-products",
@@ -16,6 +18,20 @@ export const createProducts = createAsyncThunk(
   async (productData, thunkAPI) => {
     try {
       return await productService.createProduct(productData);
+    } catch (error) {
+      const { message } = error.response.data;
+      const isTokenExpired = checkTokenExpired(message);
+      if (isTokenExpired) thunkAPI.dispatch(signout());
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  "products/delete-product",
+  async (productId, thunkAPI) => {
+    try {
+      return await productService.deleteProduct(productId);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -61,6 +77,21 @@ export const productSlice = createSlice({
         state.createdProduct = action.payload;
       })
       .addCase(createProducts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+      .addCase(deleteProduct.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.deleteProduct = action.payload;
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
