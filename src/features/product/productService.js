@@ -8,12 +8,30 @@ const getProducts = async () => {
 
   return response.data;
 };
+
+const getProductDetails = async (productId) => {
+  const response = await axios.get(
+    `${process.env.REACT_APP_API_BASE_URL}/api/product/get-product/${productId}`
+  );
+
+  return response.data;
+};
+
 const createProduct = async (product) => {
-  const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}/api/product/create-product`,
-    product,
+  const originalUrl = `${process.env.REACT_APP_API_BASE_URL}/api/product/create-product`;
+  const response = await axios.post(originalUrl, product, config);
+  console.log("Response", response);
+  return response.data;
+};
+
+const updateProduct = async (payload) => {
+  const { productId, updatedProductInfo } = payload;
+  const response = await axios.put(
+    `${process.env.REACT_APP_API_BASE_URL}/api/product/update-product/${productId}`,
+    { updatedProductInfo },
     config
   );
+
   return response.data;
 };
 
@@ -27,7 +45,9 @@ const deleteProduct = async (productId) => {
 
 const productService = {
   getProducts,
+  getProductDetails,
   createProduct,
+  updateProduct,
   deleteProduct,
 };
 

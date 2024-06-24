@@ -27,10 +27,6 @@ const columns = [
     sorter: (a, b) => a.category.length - b.category.length,
   },
   {
-    title: "Color",
-    dataIndex: "color",
-  },
-  {
     title: "Price",
     dataIndex: "price",
     sorter: (a, b) => a.price - b.price,
@@ -55,11 +51,13 @@ const Productlist = () => {
       title: productState[i].title,
       brand: productState[i].brand,
       category: productState[i]?.category?.name,
-      color: productState[i].color,
       price: `${productState[i].price}`,
       action: (
         <>
-          <Link to="/" className=" fs-3 text-danger">
+          <Link
+            to={`/admin/product/${productState[i]._id}`}
+            className=" fs-3 text-danger"
+          >
             <BiEdit />
           </Link>
           <Link

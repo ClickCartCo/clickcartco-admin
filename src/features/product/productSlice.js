@@ -13,12 +13,36 @@ export const getProducts = createAsyncThunk(
     }
   }
 );
+
+export const getProductDetails = createAsyncThunk(
+  "product/get-productDetails",
+  async (product, thunkAPI) => {
+    try {
+      return await productService.getProductDetails(product);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+export const updateProductDetails = createAsyncThunk(
+  "product/updateProduct",
+  async (product, thunkAPI) => {
+    try {
+      return await productService.updateProduct(product);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const createProducts = createAsyncThunk(
   "product/create-products",
   async (productData, thunkAPI) => {
     try {
       return await productService.createProduct(productData);
     } catch (error) {
+      console.log("Error", error);
       const { message } = error.response.data;
       const isTokenExpired = checkTokenExpired(message);
       if (isTokenExpired) thunkAPI.dispatch(signout());
@@ -44,6 +68,7 @@ const initialState = {
   isError: false,
   isLoading: false,
   isSuccess: false,
+  updatingProduct: false,
   message: "",
 };
 export const productSlice = createSlice({
@@ -78,6 +103,36 @@ export const productSlice = createSlice({
       })
       .addCase(createProducts.rejected, (state, action) => {
         state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+      .addCase(getProductDetails.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getProductDetails.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.productDetails = action.payload;
+      })
+      .addCase(getProductDetails.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+      })
+      .addCase(updateProductDetails.pending, (state) => {
+        state.updatingProduct = true;
+      })
+      .addCase(updateProductDetails.fulfilled, (state, action) => {
+        state.updatingProduct = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.updatedProduct = action.payload;
+      })
+      .addCase(updateProductDetails.rejected, (state, action) => {
+        state.updatingProduct = false;
         state.isError = true;
         state.isSuccess = false;
         state.message = action.error;

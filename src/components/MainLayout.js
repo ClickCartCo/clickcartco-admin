@@ -62,13 +62,6 @@ const MainLayout = () => {
             }
           )}
           <div className="d-flex gap-4 align-items-center">
-            {/* <div className="position-relative">
-              <IoIosNotifications className="fs-4" />
-              <span className="badge bg-warning rounded-circle p-1 position-absolute">
-                3
-              </span>
-            </div> */}
-
             <div className="d-flex gap-3 align-items-center dropdown">
               <div
                 role="button"
@@ -76,8 +69,8 @@ const MainLayout = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">{user.firstName}</h5>
-                <p className="mb-0">{user.email}</p>
+                <h5 className="mb-0">CostcoX Admin</h5>
+                <p className="mb-0">cosctcox@admin.com</p>
               </div>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>

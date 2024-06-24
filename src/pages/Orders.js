@@ -40,7 +40,27 @@ const Orders = () => {
   }, []);
   const orderState = useSelector((state) => state.auth.orders);
 
-  const data1 = [];
+  const data1 = [
+    {
+      key: 1,
+      name: "TEST",
+      product: (
+        <Link to={`/admin/order/6652e632c2a76bf281328d79`}>View Orders</Link>
+      ),
+      amount: 91.98,
+      date: new Date("2024-05-26T07:35:14.998Z").toLocaleString().split(",")[0],
+      action: (
+        <>
+          <Link to="/" className=" fs-3 text-danger">
+            <BiEdit />
+          </Link>
+          <Link className="ms-3 fs-3 text-danger" to="/">
+            <AiFillDelete />
+          </Link>
+        </>
+      ),
+    },
+  ];
   for (let i = 0; i < orderState.length; i++) {
     data1.push({
       key: i + 1,

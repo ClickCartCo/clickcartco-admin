@@ -11,4 +11,5 @@ export const config = {
     }`,
     Accept: "application/json",
   },
+  timeout: 10000,
 };

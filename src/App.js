@@ -16,6 +16,8 @@ import AddCoupon from "./pages/AddCoupon";
 import ViewEnq from "./pages/ViewEnq";
 import ViewOrder from "./pages/ViewOrder";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AddProductV2 from "./pages/AddProductV2";
+import UpdateProduct from "./pages/UpdateProduct";
 function App() {
   return (
     <Router>
@@ -37,7 +39,8 @@ function App() {
             <Route path="category" element={<Addcat />} />
             <Route path="category/:id" element={<Addcat />} />
             <Route path="list-product" element={<Productlist />} />
-            <Route path="product" element={<Addproduct />} />
+            <Route path="product" element={<AddProductV2 />} />
+            <Route path="product/:id" element={<UpdateProduct />} />
           </Route>
         </Route>
       </Routes>

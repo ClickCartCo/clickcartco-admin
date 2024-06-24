@@ -12,7 +12,10 @@ const login = async (user) => {
   return response.data;
 };
 const getOrders = async () => {
-  const response = await axios.get(`${base_url}user/getallorders`, config);
+  const response = await axios.get(
+    `${base_url}api/order/6652e632c2a76bf281328d79`,
+    config
+  );
 
   return response.data;
 };
