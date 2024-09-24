@@ -26,11 +26,8 @@ const createProduct = async (product) => {
 
 const updateProduct = async (payload) => {
   const { productId, updatedProductInfo } = payload;
-  const response = await axios.put(
-    `${process.env.REACT_APP_API_BASE_URL}/api/product/update-product/${productId}`,
-    { updatedProductInfo },
-    config
-  );
+  const remote = `${process.env.REACT_APP_API_BASE_URL}/api/product/update-product/${productId}`;
+  const response = await axios.put(remote, { updatedProductInfo }, config);
 
   return response.data;
 };

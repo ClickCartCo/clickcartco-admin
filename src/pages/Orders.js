@@ -11,12 +11,12 @@ const columns = [
     dataIndex: "key",
   },
   {
-    title: "Name",
-    dataIndex: "name",
+    title: "Order Details",
+    dataIndex: "items",
   },
   {
-    title: "Product",
-    dataIndex: "product",
+    title: "User Email",
+    dataIndex: "userEmail",
   },
   {
     title: "Amount",
@@ -26,7 +26,11 @@ const columns = [
     title: "Date",
     dataIndex: "date",
   },
-
+  { title: "Payment Success", dataIndex: "paymentSuccess" },
+  {
+    title: "View Order",
+    dataIndex: "product",
+  },
   {
     title: "Action",
     dataIndex: "action",
@@ -40,38 +44,22 @@ const Orders = () => {
   }, []);
   const orderState = useSelector((state) => state.auth.orders);
 
-  const data1 = [
-    {
-      key: 1,
-      name: "TEST",
-      product: (
-        <Link to={`/admin/order/6652e632c2a76bf281328d79`}>View Orders</Link>
-      ),
-      amount: 91.98,
-      date: new Date("2024-05-26T07:35:14.998Z").toLocaleString().split(",")[0],
-      action: (
-        <>
-          <Link to="/" className=" fs-3 text-danger">
-            <BiEdit />
-          </Link>
-          <Link className="ms-3 fs-3 text-danger" to="/">
-            <AiFillDelete />
-          </Link>
-        </>
-      ),
-    },
-  ];
+  const data1 = [];
   for (let i = 0; i < orderState.length; i++) {
+    const itemsLength = orderState[i]?.items?.length;
     data1.push({
       key: i + 1,
-      name: orderState[i].orderby.firstname,
-      product: (
-        <Link to={`/admin/order/${orderState[i].orderby._id}`}>
-          View Orders
-        </Link>
-      ),
-      amount: orderState[i].paymentIntent.amount,
+      items:
+        itemsLength > 1
+          ? `${orderState[i].items[0].product.title}+${itemsLength}`
+          : orderState[i].items[0].product.title,
+      userEmail: orderState[i].userEmail,
+      amount: orderState[i].totalAmount,
       date: new Date(orderState[i].createdAt).toLocaleString(),
+      paymentSuccess: orderState[i].paymentSuccess,
+      product: (
+        <Link to={`/admin/order/${orderState[i]._id}`}>View Orders</Link>
+      ),
       action: (
         <>
           <Link to="/" className=" fs-3 text-danger">

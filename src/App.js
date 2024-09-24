@@ -18,6 +18,7 @@ import ViewOrder from "./pages/ViewOrder";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddProductV2 from "./pages/AddProductV2";
 import UpdateProduct from "./pages/UpdateProduct";
+import OrderDetails from "./pages/OrderDetails";
 function App() {
   return (
     <Router>
@@ -34,7 +35,7 @@ function App() {
             <Route path="coupon" element={<AddCoupon />} />
             <Route path="coupon/:id" element={<AddCoupon />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="order/:id" element={<ViewOrder />} />
+            <Route path="order/:id" element={<OrderDetails />} />
             <Route path="list-category" element={<Categorylist />} />
             <Route path="category" element={<Addcat />} />
             <Route path="category/:id" element={<Addcat />} />

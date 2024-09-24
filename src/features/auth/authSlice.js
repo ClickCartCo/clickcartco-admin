@@ -34,11 +34,21 @@ export const getOrders = createAsyncThunk(
     }
   }
 );
-export const getOrderByUser = createAsyncThunk(
+export const getOrderByID = createAsyncThunk(
   "order/get-order",
   async (id, thunkAPI) => {
     try {
       return await authService.getOrder(id);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+export const updateOrderById = createAsyncThunk(
+  "order/update-order",
+  async ({ orderId, payload }, thunkAPI) => {
+    try {
+      return await authService.updateOrder(orderId, payload);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -92,17 +102,33 @@ export const authSlice = createSlice({
         state.message = action.error;
         state.isLoading = false;
       })
-      .addCase(getOrderByUser.pending, (state) => {
+      .addCase(getOrderByID.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getOrderByUser.fulfilled, (state, action) => {
+      .addCase(getOrderByID.fulfilled, (state, action) => {
         state.isError = false;
         state.isLoading = false;
         state.isSuccess = true;
-        state.orderbyuser = action.payload;
+        state.orderDetails = action.payload;
         state.message = "success";
       })
-      .addCase(getOrderByUser.rejected, (state, action) => {
+      .addCase(getOrderByID.rejected, (state, action) => {
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+        state.isLoading = false;
+      })
+      .addCase(updateOrderById.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateOrderById.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.orderDetails = action.payload.orderDetails;
+        state.message = "success";
+      })
+      .addCase(updateOrderById.rejected, (state, action) => {
         state.isError = true;
         state.isSuccess = false;
         state.message = action.error;

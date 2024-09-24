@@ -11,6 +11,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCategories } from "../features/pcategory/pcategorySlice";
 import { toast } from "react-toastify";
+import { isEqual } from "lodash";
 
 const UpdateProduct = () => {
   const [productAttrName, setProductAttrName] = useState("");
@@ -60,12 +61,6 @@ const UpdateProduct = () => {
     }
   }, [isSuccess, isError, fetchingProduct, updatingProduct]);
 
-  const isStepDirty = (currentValues, initialValues, keys) => {
-    return keys.some((key) => {
-      return currentValues[key] !== initialValues[key];
-    });
-  };
-
   const handleEditClick = (step) => {
     setIsEditing((prev) => ({ ...prev, [step]: !prev[step] }));
   };
@@ -75,7 +70,6 @@ const UpdateProduct = () => {
     delete updatedProductInfo._id;
     delete updatedProductInfo.__v;
     const payload = { productId, updatedProductInfo };
-    console.log("Payload", payload);
     dispatch(updateProductDetails(payload));
   };
 
@@ -268,348 +262,356 @@ const UpdateProduct = () => {
         // validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched, setFieldValue }) => (
-          <Form>
-            {/* Step 1 Card */}
-            <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h2>Step 1: Basic Information</h2>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => handleEditClick("step1")}
-                >
-                  {isEditing.step1 ? "Cancel" : "Edit"}
-                </button>
+        {({ values, errors, touched, setFieldValue }) => {
+          const isChanged = !isEqual(values, initialProductDetails);
+          return (
+            <Form>
+              {/* Step 1 Card */}
+              <div className="card mb-4">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h2>Step 1: Basic Information</h2>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleEditClick("step1")}
+                  >
+                    {isEditing.step1 ? "Cancel" : "Edit"}
+                  </button>
+                </div>
+                <div className="card-body">
+                  {isEditing.step1 ? (
+                    <>
+                      <div className="form-group">
+                        <label>Product Title</label>
+                        <Field name="title" className="form-control" />
+                        {errors.title && touched.title && (
+                          <div className="text-danger">{errors.title}</div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Description</label>
+                        <QuillEditor name="description" />
+                      </div>
+                      <div className="form-group">
+                        <label>Price</label>
+                        <Field
+                          name="price"
+                          type="number"
+                          className="form-control"
+                        />
+                        {errors.price && touched.price && (
+                          <div className="text-danger">{errors.price}</div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Brand</label>
+                        <Field name="brand" className="form-control" />
+                        {errors.brand && touched.brand && (
+                          <div className="text-danger">{errors.brand}</div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Category</label>
+                        {/* <Field name="category" className="form-control" /> */}
+                        <Field
+                          as="select"
+                          name="category"
+                          className="form-control"
+                        >
+                          {catState.map((category, index) => {
+                            return (
+                              <option
+                                key={index}
+                                value={category._id}
+                                label={category.name}
+                              />
+                            );
+                          })}
+                        </Field>
+                        {errors.category && touched.category && (
+                          <div className="text-danger">{errors.category}</div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="fs-5">
+                        <strong>Title:</strong> {values.title}
+                      </p>
+                      <p className="fs-5">
+                        <strong>Description:</strong>{" "}
+                        {typeof values.description === "string"
+                          ? values.description
+                          : JSON.stringify(values.description)}
+                      </p>
+                      <p className="fs-5">
+                        <strong>Price:</strong> ${values.price}
+                      </p>
+                      <p className="fs-5">
+                        <strong>Brand:</strong> {values.brand}
+                      </p>
+                      <p className="fs-5">
+                        <strong>Category:</strong>{" "}
+                        {
+                          catState.find(
+                            (category) => category._id === values.category
+                          )?.name
+                        }
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="card-body">
-                {isEditing.step1 ? (
-                  <>
-                    <div className="form-group">
-                      <label>Product Title</label>
-                      <Field name="title" className="form-control" />
-                      {errors.title && touched.title && (
-                        <div className="text-danger">{errors.title}</div>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label>Description</label>
-                      <QuillEditor name="description" />
-                    </div>
-                    <div className="form-group">
-                      <label>Price</label>
-                      <Field
-                        name="price"
-                        type="number"
-                        className="form-control"
-                      />
-                      {errors.price && touched.price && (
-                        <div className="text-danger">{errors.price}</div>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label>Brand</label>
-                      <Field name="brand" className="form-control" />
-                      {errors.brand && touched.brand && (
-                        <div className="text-danger">{errors.brand}</div>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label>Category</label>
-                      {/* <Field name="category" className="form-control" /> */}
-                      <Field
-                        as="select"
-                        name="category"
-                        className="form-control"
-                      >
-                        {catState.map((category, index) => {
-                          return (
-                            <option
-                              key={index}
-                              value={category._id}
-                              label={category.name}
-                            />
-                          );
-                        })}
-                      </Field>
-                      {errors.category && touched.category && (
-                        <div className="text-danger">{errors.category}</div>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="fs-5">
-                      <strong>Title:</strong> {values.title}
-                    </p>
-                    <p className="fs-5">
-                      <strong>Description:</strong>{" "}
-                      {typeof values.description === "string"
-                        ? values.description
-                        : JSON.stringify(values.description)}
-                    </p>
-                    <p className="fs-5">
-                      <strong>Price:</strong> ${values.price}
-                    </p>
-                    <p className="fs-5">
-                      <strong>Brand:</strong> {values.brand}
-                    </p>
-                    <p className="fs-5">
-                      <strong>Category:</strong>{" "}
-                      {
-                        catState.find(
-                          (category) => category._id === values.category
-                        )?.name
-                      }
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
 
-            {/* Step 2 Card */}
-            <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h2>Step 2: Specifications and Product Attributes</h2>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => handleEditClick("step2")}
-                >
-                  {isEditing.step2 ? "Cancel" : "Edit"}
-                </button>
-              </div>
-              <div className="card-body">
-                {isEditing.step2 ? (
-                  stepTwo(values, errors, touched, setFieldValue)
-                ) : (
-                  <>
-                    <h4>Specifications</h4>
-                    {values.specifications &&
-                      Object.entries(values.specifications)?.map(
-                        ([key, value], index) => (
-                          <p key={index} className="fs-6">
-                            <strong>{key}:</strong> {value}
-                          </p>
-                        )
-                      )}
-                    <h4>Product Attributes</h4>
-                    {values?.productAttributes &&
-                      Object.entries(values?.productAttributes)?.map(
-                        ([key, values], index) => (
-                          <div key={index} className="mb-2">
-                            <p className="fs-6">
-                              <strong>{`${key}: `}</strong>
-                              {values.join(",")}
+              {/* Step 2 Card */}
+              <div className="card mb-4">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h2>Step 2: Specifications and Product Attributes</h2>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleEditClick("step2")}
+                  >
+                    {isEditing.step2 ? "Cancel" : "Edit"}
+                  </button>
+                </div>
+                <div className="card-body">
+                  {isEditing.step2 ? (
+                    stepTwo(values, errors, touched, setFieldValue)
+                  ) : (
+                    <>
+                      <h4>Specifications</h4>
+                      {values.specifications &&
+                        Object.entries(values.specifications)?.map(
+                          ([key, value], index) => (
+                            <p key={index} className="fs-6">
+                              <strong>{key}:</strong> {value}
                             </p>
-                          </div>
-                        )
-                      )}
-                  </>
-                )}
+                          )
+                        )}
+                      <h4>Product Attributes</h4>
+                      {values?.productAttributes &&
+                        Object.entries(values?.productAttributes)?.map(
+                          ([key, values], index) => (
+                            <div key={index} className="mb-2">
+                              <p className="fs-6">
+                                <strong>{`${key}: `}</strong>
+                                {values.join(",")}
+                              </p>
+                            </div>
+                          )
+                        )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Step 3 Card */}
-            <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h2>Step 3: Stock and Sale Type</h2>
+              {/* Step 3 Card */}
+              <div className="card mb-4">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h2>Step 3: Stock and Sale Type</h2>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleEditClick("step3")}
+                  >
+                    {isEditing.step3 ? "Cancel" : "Edit"}
+                  </button>
+                </div>
+                <div className="card-body">
+                  {isEditing.step3 ? (
+                    <>
+                      <div className="form-group">
+                        <label>In Stock</label>
+                        <Field
+                          name="inStock"
+                          as="select"
+                          className="form-control"
+                        >
+                          <option value="true">True</option>
+                          <option value="false">False</option>
+                        </Field>
+                        {errors.inStock && touched.inStock && (
+                          <div className="text-danger">{errors.inStock}</div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Sale Type</label>
+                        <Field name="tags" as="select" className="form-control">
+                          <option value="Regular">Regular</option>
+                          <option value="Featured">Featured</option>
+                          <option value="Popular">Popular</option>
+                        </Field>
+                        {errors.tags && touched.tags && (
+                          <div className="text-danger">{errors.tags}</div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="fs-5">
+                        <strong>In Stock:</strong>{" "}
+                        {values.inStock ? "Yes" : "No"}
+                      </p>
+                      <p className="fs-5">
+                        <strong>Sale Type:</strong> {values.tags}
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Step 4 Card */}
+              <div className="card mb-4">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h2>Step 4: Images and Reviews</h2>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => handleEditClick("step4")}
+                  >
+                    {isEditing.step4 ? "Cancel" : "Edit"}
+                  </button>
+                </div>
+                <div className="card-body">
+                  {isEditing.step4 ? (
+                    <>
+                      <div className="form-group">
+                        <label>Thumbnail Image</label>
+                        <Field name="thumbnail" className="form-control" />
+                        {errors.thumbnail && touched.thumbnail && (
+                          <div className="text-danger">{errors.thumbnail}</div>
+                        )}
+                      </div>
+                      <div className="form-group">
+                        <label>Images</label>
+                        <FieldArray name="images">
+                          {({ push, remove }) => (
+                            <div>
+                              {values.images?.map((image, index) => (
+                                <div key={index} className="d-flex mb-2">
+                                  <Field
+                                    name={`images.${index}`}
+                                    placeholder="Image URL"
+                                    className="form-control ms-2"
+                                    value={image}
+                                  />
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger ms-2"
+                                    onClick={() => remove(index)}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => push("")}
+                              >
+                                Add Image
+                              </button>
+                            </div>
+                          )}
+                        </FieldArray>
+                      </div>
+                      <div className="form-group">
+                        <label>Review Ratings</label>
+                        <FieldArray name="customRatings">
+                          {({ push, remove }) => (
+                            <div>
+                              {values?.customRatings?.map((rating, index) => (
+                                <div key={index} className="d-flex mb-2">
+                                  <Field
+                                    name={`customRatings.${index}.ratingNumber`}
+                                    placeholder="Rating Number"
+                                    type="number"
+                                    className="form-control ms-2"
+                                  />
+                                  <Field
+                                    name={`customRatings.${index}.percentage`}
+                                    placeholder="Percentage"
+                                    type="number"
+                                    className="form-control ms-2"
+                                  />
+                                  <Field
+                                    name={`customRatings.${index}.noOfCustomer`}
+                                    placeholder="Number of Customers"
+                                    type="number"
+                                    className="form-control ms-2"
+                                  />
+                                  <button
+                                    type="button"
+                                    className="btn btn-danger ms-2"
+                                    onClick={() => remove(index)}
+                                  >
+                                    -
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() =>
+                                  push({
+                                    ratingNumber: "",
+                                    percentage: "",
+                                    noOfCustomer: "",
+                                  })
+                                }
+                              >
+                                Add Rating
+                              </button>
+                              {/* Set value to blank object when the last item is deleted */}
+                              {values.customRatings?.length === 0 && (
+                                <Field name="customRatings">
+                                  {({ field }) => (
+                                    <input {...field} type="hidden" value="" />
+                                  )}
+                                </Field>
+                              )}
+                            </div>
+                          )}
+                        </FieldArray>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="fs-5">
+                        <strong>Thumbnail Image:</strong> {values.thumbnail}
+                      </p>
+                      <h4>Images</h4>
+                      {values.images?.map((image, index) => (
+                        <p key={index} className="fs-5">
+                          {image}
+                        </p>
+                      ))}
+                      <h4>Review Ratings</h4>
+                      {values?.customRatings?.map((rating, index) => (
+                        <p key={index} className="fs-6">
+                          <strong>Rating Number:</strong> {rating.ratingNumber},{" "}
+                          <strong>Percentage:</strong> {rating.percentage}%,{" "}
+                          <strong>Number of Customers:</strong>{" "}
+                          {rating.noOfCustomer}
+                        </p>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="text-center">
                 <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => handleEditClick("step3")}
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={!isChanged}
                 >
-                  {isEditing.step3 ? "Cancel" : "Edit"}
+                  Update Product
                 </button>
               </div>
-              <div className="card-body">
-                {isEditing.step3 ? (
-                  <>
-                    <div className="form-group">
-                      <label>In Stock</label>
-                      <Field
-                        name="inStock"
-                        as="select"
-                        className="form-control"
-                      >
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </Field>
-                      {errors.inStock && touched.inStock && (
-                        <div className="text-danger">{errors.inStock}</div>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label>Sale Type</label>
-                      <Field name="tags" as="select" className="form-control">
-                        <option value="Regular">Regular</option>
-                        <option value="Featured">Featured</option>
-                        <option value="Popular">Popular</option>
-                      </Field>
-                      {errors.tags && touched.tags && (
-                        <div className="text-danger">{errors.tags}</div>
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="fs-5">
-                      <strong>In Stock:</strong> {values.inStock ? "Yes" : "No"}
-                    </p>
-                    <p className="fs-5">
-                      <strong>Sale Type:</strong> {values.tags}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Step 4 Card */}
-            <div className="card mb-4">
-              <div className="card-header d-flex justify-content-between align-items-center">
-                <h2>Step 4: Images and Reviews</h2>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => handleEditClick("step4")}
-                >
-                  {isEditing.step4 ? "Cancel" : "Edit"}
-                </button>
-              </div>
-              <div className="card-body">
-                {isEditing.step4 ? (
-                  <>
-                    <div className="form-group">
-                      <label>Thumbnail Image</label>
-                      <Field name="thumbnail" className="form-control" />
-                      {errors.thumbnail && touched.thumbnail && (
-                        <div className="text-danger">{errors.thumbnail}</div>
-                      )}
-                    </div>
-                    <div className="form-group">
-                      <label>Images</label>
-                      <FieldArray name="images">
-                        {({ push, remove }) => (
-                          <div>
-                            {values.images?.map((image, index) => (
-                              <div key={index} className="d-flex mb-2">
-                                <Field
-                                  name={`images.${index}`}
-                                  placeholder="Image URL"
-                                  className="form-control ms-2"
-                                  value={image}
-                                />
-                                <button
-                                  type="button"
-                                  className="btn btn-danger ms-2"
-                                  onClick={() => remove(index)}
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            ))}
-                            <button
-                              type="button"
-                              className="btn btn-primary"
-                              onClick={() => push("")}
-                            >
-                              Add Image
-                            </button>
-                          </div>
-                        )}
-                      </FieldArray>
-                    </div>
-                    <div className="form-group">
-                      <label>Review Ratings</label>
-                      <FieldArray name="customRatings">
-                        {({ push, remove }) => (
-                          <div>
-                            {values?.customRatings?.map((rating, index) => (
-                              <div key={index} className="d-flex mb-2">
-                                <Field
-                                  name={`customRatings.${index}.ratingNumber`}
-                                  placeholder="Rating Number"
-                                  type="number"
-                                  className="form-control ms-2"
-                                />
-                                <Field
-                                  name={`customRatings.${index}.percentage`}
-                                  placeholder="Percentage"
-                                  type="number"
-                                  className="form-control ms-2"
-                                />
-                                <Field
-                                  name={`customRatings.${index}.noOfCustomer`}
-                                  placeholder="Number of Customers"
-                                  type="number"
-                                  className="form-control ms-2"
-                                />
-                                <button
-                                  type="button"
-                                  className="btn btn-danger ms-2"
-                                  onClick={() => remove(index)}
-                                >
-                                  -
-                                </button>
-                              </div>
-                            ))}
-                            <button
-                              type="button"
-                              className="btn btn-primary"
-                              onClick={() =>
-                                push({
-                                  ratingNumber: "",
-                                  percentage: "",
-                                  noOfCustomer: "",
-                                })
-                              }
-                            >
-                              Add Rating
-                            </button>
-                            {/* Set value to blank object when the last item is deleted */}
-                            {values.customRatings?.length === 0 && (
-                              <Field name="customRatings">
-                                {({ field }) => (
-                                  <input {...field} type="hidden" value="" />
-                                )}
-                              </Field>
-                            )}
-                          </div>
-                        )}
-                      </FieldArray>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="fs-5">
-                      <strong>Thumbnail Image:</strong> {values.thumbnail}
-                    </p>
-                    <h4>Images</h4>
-                    {values.images?.map((image, index) => (
-                      <p key={index} className="fs-5">
-                        {image}
-                      </p>
-                    ))}
-                    <h4>Review Ratings</h4>
-                    {values?.customRatings?.map((rating, index) => (
-                      <p key={index} className="fs-6">
-                        <strong>Rating Number:</strong> {rating.ratingNumber},{" "}
-                        <strong>Percentage:</strong> {rating.percentage}%,{" "}
-                        <strong>Number of Customers:</strong>{" "}
-                        {rating.noOfCustomer}
-                      </p>
-                    ))}
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary">
-                Update Product
-              </button>
-            </div>
-          </Form>
-        )}
+            </Form>
+          );
+        }}
       </Formik>
     </div>
   );
