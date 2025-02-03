@@ -1,165 +1,99 @@
 import React from "react";
-import { BsArrowDownRight, BsArrowUpRight } from "react-icons/bs";
-import { Column } from "@ant-design/plots";
-import { Table } from "antd";
-const columns = [
-  {
-    title: "SNo",
-    dataIndex: "key",
-  },
-  {
-    title: "Name",
-    dataIndex: "name",
-  },
-  {
-    title: "Product",
-    dataIndex: "product",
-  },
-  {
-    title: "Status",
-    dataIndex: "staus",
-  },
-];
-const data1 = [];
-for (let i = 0; i < 46; i++) {
-  data1.push({
-    key: i,
-    name: `Edward King ${i}`,
-    product: 32,
-    staus: `London, Park Lane no. ${i}`,
-  });
-}
+import { Card, Statistic, Progress } from "antd";
+import { Line } from "@ant-design/plots";
+
 const Dashboard = () => {
-  const data = [
-    {
-      type: "Jan",
-      sales: 38,
-    },
-    {
-      type: "Feb",
-      sales: 52,
-    },
-    {
-      type: "Mar",
-      sales: 61,
-    },
-    {
-      type: "Apr",
-      sales: 145,
-    },
-    {
-      type: "May",
-      sales: 48,
-    },
-    {
-      type: "Jun",
-      sales: 38,
-    },
-    {
-      type: "July",
-      sales: 38,
-    },
-    {
-      type: "Aug",
-      sales: 38,
-    },
-    {
-      type: "Sept",
-      sales: 38,
-    },
-    {
-      type: "Oct",
-      sales: 38,
-    },
-    {
-      type: "Nov",
-      sales: 38,
-    },
-    {
-      type: "Dec",
-      sales: 38,
-    },
+  // Mock Sales Data (Last 3 Months)
+  const salesData = [
+    { month: "November", totalSales: 120000, percentageChange: "+12%" },
+    { month: "December", totalSales: 150000, percentageChange: "+25%" },
+    { month: "January", totalSales: 130000, percentageChange: "-13%" },
   ];
-  const config = {
-    data,
-    xField: "type",
-    yField: "sales",
-    color: ({ type }) => {
-      return "#ffd333";
-    },
-    label: {
-      position: "middle",
-      style: {
-        fill: "#FFFFFF",
-        opacity: 1,
-      },
-    },
-    xAxis: {
-      label: {
-        autoHide: true,
-        autoRotate: false,
-      },
-    },
-    meta: {
-      type: {
-        alias: "Month",
-      },
-      sales: {
-        alias: "Income",
-      },
-    },
+
+  // Mock Refund Data
+  const refundData = {
+    totalSales: 400000, // Sum of last 3 months
+    totalRefunds: 15000, // Total Refunds
+    refundPercentage: ((15000 / 400000) * 100).toFixed(2), // Refund Percentage
   };
+
+  // Line Chart Configuration
+  const chartConfig = {
+    data: salesData.map((item) => ({
+      month: item.month,
+      sales: item.totalSales,
+    })),
+    xField: "month",
+    yField: "sales",
+    point: { size: 5, shape: "circle" },
+    color: "#1890ff",
+  };
+
   return (
-    <div>
-      <h3 className="mb-4 title">Dashboard</h3>
-      <div className="d-flex justify-content-between align-items-center gap-3">
-        <div className="d-flex justify-content-between align-items-end flex-grow-1 bg-white p-3 roudned-3">
-          <div>
-            <p className="desc">Total</p>
-            <h4 className="mb-0 sub-title">$1100</h4>
+    <div className="container mt-4">
+      <div className="row">
+        {/* Total Sales Cards */}
+        {salesData.map((item, index) => (
+          <div className="col-md-4 mb-3" key={index}>
+            <Card bordered={false} className="shadow-sm p-3">
+              <Statistic
+                title={`Sales in ${item.month}`}
+                value={item.totalSales}
+                precision={2}
+                suffix="₹"
+              />
+              <p
+                className={
+                  item.percentageChange.includes("-")
+                    ? "text-danger"
+                    : "text-success"
+                }
+              >
+                Change: {item.percentageChange}
+              </p>
+            </Card>
           </div>
-          <div className="d-flex flex-column align-items-end">
-            <h6>
-              <BsArrowDownRight /> 32%
-            </h6>
-            <p className="mb-0  desc">Compared To April 2022</p>
-          </div>
-        </div>
-        <div className="d-flex justify-content-between align-items-end flex-grow-1 bg-white p-3 roudned-3">
-          <div>
-            <p className="desc">Total</p>
-            <h4 className="mb-0 sub-title">$1100</h4>
-          </div>
-          <div className="d-flex flex-column align-items-end">
-            <h6 className="red">
-              <BsArrowDownRight /> 32%
-            </h6>
-            <p className="mb-0  desc">Compared To April 2022</p>
-          </div>
-        </div>
-        <div className="d-flex justify-content-between align-items-end flex-grow-1 bg-white p-3 roudned-3">
-          <div>
-            <p className="desc">Total</p>
-            <h4 className="mb-0 sub-title">$1100</h4>
-          </div>
-          <div className="d-flex flex-column align-items-end">
-            <h6 className="green">
-              <BsArrowDownRight /> 32%
-            </h6>
-            <p className="mb-0 desc">Compared To April 2022</p>
-          </div>
-        </div>
+        ))}
       </div>
-      <div className="mt-4">
-        <h3 className="mb-5 title">Income Statics</h3>
-        <div>
-          <Column {...config} />
+
+      <div className="row">
+        {/* Sales Growth Chart */}
+        <div className="col-md-8 mb-3">
+          <Card
+            title="Sales Growth (Last 3 Months)"
+            bordered={false}
+            className="shadow-sm p-3"
+          >
+            <Line {...chartConfig} />
+          </Card>
         </div>
-      </div>
-      <div className="mt-4">
-        <h3 className="mb-5 title">Recent Orders</h3>
-        <div>
-          <Table columns={columns} dataSource={data1} />
+
+        {/* Refund vs Sales */}
+        <div className="col-md-4 mb-3">
+          <Card
+            title="Refunds vs Sales"
+            bordered={false}
+            className="shadow-sm p-3"
+          >
+            <Statistic
+              title="Total Sales"
+              value={refundData.totalSales}
+              precision={2}
+              suffix="₹"
+            />
+            <Statistic
+              title="Total Refunds"
+              value={refundData.totalRefunds}
+              precision={2}
+              suffix="₹"
+              className="mt-2"
+            />
+            <Progress
+              percent={parseFloat(refundData.refundPercentage)}
+              status={refundData.refundPercentage > 10 ? "exception" : "active"}
+              className="mt-3"
+            />
+          </Card>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getCategories } from "../features/pcategory/pcategorySlice";
 import { toast } from "react-toastify";
 import { isEqual } from "lodash";
+import ImageUploadComponent from "./AddProductComponents/ImageUploadComponent";
 
 const UpdateProduct = () => {
   const [productAttrName, setProductAttrName] = useState("");
@@ -61,11 +62,49 @@ const UpdateProduct = () => {
     }
   }, [isSuccess, isError, fetchingProduct, updatingProduct]);
 
-  const handleEditClick = (step) => {
+  const handleEditClick = (step, setFieldValue) => {
+    if (isEditing[step]) {
+      // Reset only the fields related to that step
+      switch (step) {
+        case "step1":
+          setFieldValue("title", initialProductDetails.title);
+          setFieldValue("description", initialProductDetails.description);
+          setFieldValue("price", initialProductDetails.price);
+          setFieldValue("brand", initialProductDetails.brand);
+          setFieldValue("category", initialProductDetails.category);
+          break;
+
+        case "step2":
+          setFieldValue("specifications", initialProductDetails.specifications);
+          setFieldValue(
+            "productAttributes",
+            initialProductDetails.productAttributes
+          );
+          break;
+
+        case "step3":
+          setFieldValue("inStock", initialProductDetails.inStock);
+          setFieldValue("tags", initialProductDetails.tags);
+          break;
+
+        case "step4":
+          setFieldValue("thumbnail", initialProductDetails.thumbnail);
+          setFieldValue("images", initialProductDetails.images);
+          setFieldValue("customRatings", initialProductDetails.customRatings);
+          break;
+
+        default:
+          break;
+      }
+    }
     setIsEditing((prev) => ({ ...prev, [step]: !prev[step] }));
   };
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (e, values) => {
+    // Prevent default behavior if it's an event
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     const updatedProductInfo = structuredClone(values);
     delete updatedProductInfo._id;
     delete updatedProductInfo.__v;
@@ -260,7 +299,6 @@ const UpdateProduct = () => {
       <Formik
         initialValues={initialProductDetails}
         // validationSchema={validationSchema}
-        onSubmit={handleSubmit}
       >
         {({ values, errors, touched, setFieldValue }) => {
           const isChanged = !isEqual(values, initialProductDetails);
@@ -273,7 +311,7 @@ const UpdateProduct = () => {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => handleEditClick("step1")}
+                    onClick={() => handleEditClick("step1", setFieldValue)}
                   >
                     {isEditing.step1 ? "Cancel" : "Edit"}
                   </button>
@@ -370,7 +408,7 @@ const UpdateProduct = () => {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => handleEditClick("step2")}
+                    onClick={() => handleEditClick("step2", setFieldValue)}
                   >
                     {isEditing.step2 ? "Cancel" : "Edit"}
                   </button>
@@ -413,7 +451,7 @@ const UpdateProduct = () => {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => handleEditClick("step3")}
+                    onClick={() => handleEditClick("step3", setFieldValue)}
                   >
                     {isEditing.step3 ? "Cancel" : "Edit"}
                   </button>
@@ -468,7 +506,7 @@ const UpdateProduct = () => {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => handleEditClick("step4")}
+                    onClick={() => handleEditClick("step4", setFieldValue)}
                   >
                     {isEditing.step4 ? "Cancel" : "Edit"}
                   </button>
@@ -477,47 +515,24 @@ const UpdateProduct = () => {
                   {isEditing.step4 ? (
                     <>
                       <div className="form-group">
-                        <label>Thumbnail Image</label>
-                        <Field name="thumbnail" className="form-control" />
-                        {errors.thumbnail && touched.thumbnail && (
-                          <div className="text-danger">{errors.thumbnail}</div>
-                        )}
+                        <h4>Thumbnail</h4>
+                        <ImageUploadComponent
+                          setFieldValue={setFieldValue}
+                          fieldName="thumbnail"
+                          imageLinks={[values.thumbnail]}
+                        />
                       </div>
                       <div className="form-group">
-                        <label>Images</label>
-                        <FieldArray name="images">
-                          {({ push, remove }) => (
-                            <div>
-                              {values.images?.map((image, index) => (
-                                <div key={index} className="d-flex mb-2">
-                                  <Field
-                                    name={`images.${index}`}
-                                    placeholder="Image URL"
-                                    className="form-control ms-2"
-                                    value={image}
-                                  />
-                                  <button
-                                    type="button"
-                                    className="btn btn-danger ms-2"
-                                    onClick={() => remove(index)}
-                                  >
-                                    Remove
-                                  </button>
-                                </div>
-                              ))}
-                              <button
-                                type="button"
-                                className="btn btn-primary"
-                                onClick={() => push("")}
-                              >
-                                Add Image
-                              </button>
-                            </div>
-                          )}
-                        </FieldArray>
+                        <h4>Images</h4>
+                        <ImageUploadComponent
+                          allowMultipleUploads={true}
+                          setFieldValue={setFieldValue}
+                          fieldName="images"
+                          imageLinks={values.images}
+                        />
                       </div>
                       <div className="form-group">
-                        <label>Review Ratings</label>
+                        <h4>Review Ratings</h4>
                         <FieldArray name="customRatings">
                           {({ push, remove }) => (
                             <div>
@@ -600,13 +615,21 @@ const UpdateProduct = () => {
                   )}
                 </div>
               </div>
+
               <div className="text-center">
                 <button
-                  type="submit"
+                  type="button"
                   className="btn btn-primary"
-                  disabled={!isChanged}
+                  disabled={!isChanged || updatingProduct}
+                  onClick={(e) => handleSubmit(e, values)}
                 >
-                  Update Product
+                  {updatingProduct && (
+                    <span
+                      className="spinner-border spinner-border-sm"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span role="status">Update Product</span>
                 </button>
               </div>
             </Form>

@@ -68,13 +68,15 @@ const OrderDetails = () => {
   // Handler for tracking number input change
   const handleTrackingNumberChange = (index, e) => {
     const newTrackingNumbers = [...trackingNumbers];
-    newTrackingNumbers[index] = e.target.value;
     const newTrackingChanged = [...isTrackingNumberChanged];
+    newTrackingNumbers[index] = e.target.value;
     newTrackingChanged[index] = true;
     setTrackingNumbers(newTrackingNumbers);
     setIsTrackingNumberChanged(newTrackingChanged);
     if (e.target.value === "") {
+      newTrackingNumbers[index] = e.target.value;
       newTrackingChanged[index] = false;
+      setTrackingNumbers(newTrackingNumbers);
       setIsTrackingNumberChanged(newTrackingChanged);
     }
   };
@@ -128,7 +130,6 @@ const OrderDetails = () => {
       trackingNumber: trackingNumbers[index],
     };
     const response = await dispatch(updateOrderById({ orderId, payload }));
-    console.log("Action response", response);
     if (response.meta.requestStatus === "fulfilled") {
       toast.success("Order Tracking Number Updated Successfullly!");
     }
@@ -138,6 +139,22 @@ const OrderDetails = () => {
     const newTrackingChanged = [...isTrackingNumberChanged];
     newTrackingChanged[index] = false;
     setIsTrackingNumberChanged(newTrackingChanged);
+  };
+
+  const [editTracking, setEditTracking] = useState({});
+
+  const handleEditToggle = (index) => {
+    setEditTracking((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const handleCancelEdit = (index) => {
+    setEditTracking((prev) => ({
+      ...prev,
+      [index]: false,
+    }));
   };
 
   if (!orderDetails) {
@@ -163,7 +180,7 @@ const OrderDetails = () => {
           <div className="row">
             <div className="col-md-6">
               <h5>Order Id: {orderDetails.orderNumber}</h5>
-              <h5>User Email: {orderDetails.userEmail}</h5>
+              <h5>User Email: {orderDetails.userDetails.userEmail}</h5>
               <div className="form-group">
                 <label htmlFor="orderStatus">Order Status</label>
                 <select
@@ -178,10 +195,10 @@ const OrderDetails = () => {
                   <option value="completely delivered">
                     Completely Delivered
                   </option>
-                  <option value="partially cancelled">
+                  {/* <option value="partially cancelled">
                     Partially Cancelled
                   </option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="cancelled">Cancelled</option> */}
                   <option value="placed">Confirmed</option>
                 </select>
                 <button
@@ -193,14 +210,14 @@ const OrderDetails = () => {
                 </button>
               </div>
               <div className="m-1">
-                {/* <div className="d-flex">
+                <div className="d-flex">
                   <span>
                     <h6>Total Tax Amount:</h6>
                   </span>
                   <span>
                     <p>${orderDetails.taxAmount}</p>
                   </span>
-                </div> */}
+                </div>
                 <div className="d-flex">
                   <span>
                     <h6>Shipping Amount:</h6>
@@ -299,51 +316,83 @@ const OrderDetails = () => {
                   ))}
                 </ul>
                 <div className="form-group">
-                  <label htmlFor={`itemStatus-${index}`}>Item Status</label>
-                  <select
-                    className="form-control"
-                    id={`itemStatus-${index}`}
-                    value={itemStatus[index]}
-                    onChange={(e) => handleItemStatusChange(index, e)}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="returned">Returned</option>
-                  </select>
-                  <button
-                    className="btn btn-primary mt-2"
-                    onClick={() => updateItemStatus(item.orderId, index)}
-                    disabled={isUpdating || !isItemStatusChanged[index]}
-                  >
-                    Update Item Status
-                  </button>
-                </div>
-                <div className="form-group mt-3">
-                  <label>Tracking Number:</label>
-                  {item.trackingNumber ? (
-                    <p>{item.trackingNumber}</p>
+                  {item.status === "cancelled" ? (
+                    <>
+                      <h4>Item Status</h4>
+                      <h5>{item.status}</h5>
+                    </>
                   ) : (
-                    <div>
-                      <input
-                        type="text"
-                        className="form-control mb-2"
-                        placeholder="Enter tracking number"
-                        value={trackingNumbers[index] || ""}
-                        onChange={(e) => handleTrackingNumberChange(index, e)}
-                      />
-                      <button
-                        className="btn btn-primary"
-                        onClick={() =>
-                          updateTrackingNumber(item.orderId, index)
-                        }
-                        disabled={isUpdating || !isTrackingNumberChanged[index]}
+                    <>
+                      {" "}
+                      <label htmlFor={`itemStatus-${index}`}>Item Status</label>
+                      <select
+                        className="form-control"
+                        id={`itemStatus-${index}`}
+                        value={itemStatus[index]}
+                        onChange={(e) => handleItemStatusChange(index, e)}
                       >
-                        Update Tracking Number
+                        <option value="pending">Pending</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="returned">Returned</option>
+                      </select>
+                      <button
+                        className="btn btn-primary mt-2"
+                        onClick={() => updateItemStatus(item.orderId, index)}
+                        disabled={isUpdating || !isItemStatusChanged[index]}
+                      >
+                        Update Item Status
                       </button>
-                    </div>
+                    </>
                   )}
                 </div>
+                {item.status !== "cancelled" ? (
+                  <div className="form-group mt-3">
+                    <label>
+                      <h5>Tracking Number:</h5>
+                    </label>
+                    {item.trackingNumber && !editTracking[index] ? (
+                      <div>
+                        <h6>{item.trackingNumber}</h6>
+                        <button
+                          className="btn btn-secondary"
+                          onClick={() => handleEditToggle(index)}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="text"
+                          className="form-control mb-2"
+                          placeholder="Enter tracking number"
+                          value={
+                            trackingNumbers[index] || item.trackingNumber || ""
+                          }
+                          onChange={(e) => handleTrackingNumberChange(index, e)}
+                        />
+                        <button
+                          className="btn btn-primary me-2"
+                          onClick={() =>
+                            updateTrackingNumber(item.orderId, index)
+                          }
+                          disabled={
+                            isUpdating || !isTrackingNumberChanged[index]
+                          }
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => handleCancelEdit(index)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

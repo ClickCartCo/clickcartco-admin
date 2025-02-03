@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import authService from "./authServices";
-import { useNavigate } from "react-router-dom";
 
 const getUserfromLocalStorage = localStorage.getItem("user")
   ? JSON.parse(localStorage.getItem("user"))
@@ -13,6 +12,7 @@ const initialState = {
   isSuccess: false,
   message: "",
 };
+
 export const login = createAsyncThunk(
   "auth/login",
   async (userData, thunkAPI) => {
@@ -64,6 +64,10 @@ export const authSlice = createSlice({
       localStorage.removeItem("user");
       // Set user state to empty object
       state.user = null;
+      state.isError = false;
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.message = "";
     },
   },
   extraReducers: (buildeer) => {
@@ -79,11 +83,9 @@ export const authSlice = createSlice({
         state.message = "success";
       })
       .addCase(login.rejected, (state, action) => {
-        console.log("action", action.payload.response);
-        console.log("Error", action.payload.response.data.message);
         state.isError = true;
         state.isSuccess = false;
-        state.message = action?.payload?.response?.data?.message?.split(":");
+        state.message = action?.payload?.response?.data?.error;
         state.isLoading = false;
       })
       .addCase(getOrders.pending, (state) => {

@@ -7,7 +7,7 @@ export const getCategories = createAsyncThunk(
     try {
       return await pCategoryService.getProductCategories();
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.message || "API Error");
     }
   }
 );
@@ -17,7 +17,7 @@ export const createCategory = createAsyncThunk(
     try {
       return await pCategoryService.createCategory(categoryData);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.message || "API Error");
     }
   }
 );
@@ -27,7 +27,7 @@ export const updateAProductCategory = createAsyncThunk(
     try {
       return await pCategoryService.updateProductCategory(category);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.message || "API Error");
     }
   }
 );
@@ -38,7 +38,7 @@ export const deleteAProductCategory = createAsyncThunk(
     try {
       return await pCategoryService.deleteProductCategory(id);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
@@ -48,10 +48,11 @@ export const getAProductCategory = createAsyncThunk(
     try {
       return await pCategoryService.getProductCategory(id);
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
+
 export const resetState = createAction("RevertAll");
 
 const initialState = {

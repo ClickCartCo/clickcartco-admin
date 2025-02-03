@@ -4,7 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../features/auth/authSlice";
+import { login, resetAuthState } from "../features/auth/authSlice";
+import { Eye, EyeSlash } from "react-bootstrap-icons";
 
 let schema = yup.object().shape({
   email: yup
@@ -13,9 +14,16 @@ let schema = yup.object().shape({
     .required("Email is Required"),
   password: yup.string().required("Password is Required"),
 });
+
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -25,12 +33,15 @@ const Login = () => {
     onSubmit: (values) => {
       dispatch(login(values))
         .then(() => {
-          navigate("/admin"); // Navigate upon successful login
+          navigate("/admin");
         })
         .catch((error) => {});
     },
   });
-  const { user, message } = useSelector((state) => state.auth);
+
+  const { user, isLoading, isSuccess, message } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (user) {
@@ -39,19 +50,11 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="py-5" style={{ background: "#ffd333", minHeight: "100vh" }}>
-      <br />
-      <br />
-      <br />
-      <br />
-      <br />
+    <div className="py-5" style={{ background: "#808080", minHeight: "100vh" }}>
       <div className="my-5 w-25 bg-white rounded-3 mx-auto p-4">
         <h3 className="text-center title">Login</h3>
         <p className="text-center">Login to your account to continue.</p>
-        <div className="error text-center">
-          {message.message == "Rejected" ? "You are not an Admin" : message}
-        </div>
-        <form action="" onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
           <CustomInput
             type="text"
             label="Email Address"
@@ -64,29 +67,48 @@ const Login = () => {
           <div className="error mt-2">
             {formik.touched.email && formik.errors.email}
           </div>
-          <CustomInput
-            type="password"
-            label="Password"
-            id="pass"
-            name="password"
-            onChng={formik.handleChange("password")}
-            onBlr={formik.handleBlur("password")}
-            val={formik.values.password}
-          />
+
+          <div className="position-relative">
+            <CustomInput
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              id="pass"
+              name="password"
+              onChng={formik.handleChange("password")}
+              onBlr={formik.handleBlur("password")}
+              val={formik.values.password}
+            />
+            <button
+              type="button"
+              className="btn position-absolute top-50 end-0 translate-middle-y"
+              onClick={togglePasswordVisibility}
+              style={{ background: "transparent", border: "none" }}
+            >
+              {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
           <div className="error mt-2">
             {formik.touched.password && formik.errors.password}
           </div>
+
           <div className="mb-3 text-end">
-            <Link to="forgot-password" className="">
-              Forgot Password?
-            </Link>
+            <Link to="forgot-password">Forgot Password?</Link>
           </div>
+          <div className="error text-center">{message}</div>
+
           <button
-            className="border-0 px-3 py-2 text-white fw-bold w-100 text-center text-decoration-none fs-5"
-            style={{ background: "#ffd333" }}
+            className="btn btn-primary w-100"
             type="submit"
+            disabled={isLoading || isSuccess}
+            style={{ background: "#1155cc" }}
           >
-            Login
+            {isLoading && (
+              <span
+                className="spinner-border spinner-border-sm"
+                aria-hidden="true"
+              />
+            )}
+            <span role="status">Login</span>
           </button>
         </form>
       </div>

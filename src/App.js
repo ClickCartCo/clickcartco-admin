@@ -10,15 +10,14 @@ import Orders from "./pages/Orders";
 import Categorylist from "./pages/Categorylist";
 import Productlist from "./pages/Productlist";
 import Addcat from "./pages/Addcat";
-import Addproduct from "./pages/Addproduct";
 import Couponlist from "./pages/Couponlist";
 import AddCoupon from "./pages/AddCoupon";
 import ViewEnq from "./pages/ViewEnq";
-import ViewOrder from "./pages/ViewOrder";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddProductV2 from "./pages/AddProductV2";
 import UpdateProduct from "./pages/UpdateProduct";
 import OrderDetails from "./pages/OrderDetails";
+
 function App() {
   return (
     <Router>
@@ -29,11 +28,6 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/admin" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="enquiries" element={<Enquiries />} />
-            <Route path="enquiries/:id" element={<ViewEnq />} />
-            <Route path="coupon-list" element={<Couponlist />} />
-            <Route path="coupon" element={<AddCoupon />} />
-            <Route path="coupon/:id" element={<AddCoupon />} />
             <Route path="orders" element={<Orders />} />
             <Route path="order/:id" element={<OrderDetails />} />
             <Route path="list-category" element={<Categorylist />} />
@@ -42,6 +36,12 @@ function App() {
             <Route path="list-product" element={<Productlist />} />
             <Route path="product" element={<AddProductV2 />} />
             <Route path="product/:id" element={<UpdateProduct />} />
+            {/* Future Functionalities 
+            <Route path="enquiries" element={<Enquiries />} />
+            <Route path="enquiries/:id" element={<ViewEnq />} />
+            <Route path="coupon-list" element={<Couponlist />} />
+            <Route path="coupon" element={<AddCoupon />} />
+            <Route path="coupon/:id" element={<AddCoupon />} /> */}
           </Route>
         </Route>
       </Routes>

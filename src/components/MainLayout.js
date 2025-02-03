@@ -5,11 +5,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import { Outlet } from "react-router-dom";
-import { IoIosNotifications } from "react-icons/io";
 import { Layout, Menu, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 import { MainLayoutMenuItems } from "../common/constants";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signout } from "../features/auth/authSlice";
 const { Header, Sider, Content } = Layout;
 const MainLayout = () => {
@@ -19,7 +18,6 @@ const MainLayout = () => {
   } = theme.useToken();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.user);
   const handleSignout = () => {
     dispatch(signout());
     navigate("/");

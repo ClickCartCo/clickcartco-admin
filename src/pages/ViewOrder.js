@@ -43,36 +43,8 @@ const columns = [
 
 const ViewOrder = () => {
   const location = useLocation();
-  const userId = location.pathname.split("/")[3];
-  const dispatch = useDispatch();
   const data1 = [];
-  // useEffect(() => {
-  //   dispatch(getOrderByUser(userId));
-  // }, []);
-  // const orderState = useSelector((state) => state.auth.orderbyuser[0].products);
-  // console.log(orderState);
-  // const data1 = [];
-  // for (let i = 0; i < orderState.length; i++) {
-  //   data1.push({
-  //     key: i + 1,
-  //     name: orderState[i].product.title,
-  //     brand: orderState[i].product.brand,
-  //     count: orderState[i].count,
-  //     amount: orderState[i].product.price,
-  //     color: orderState[i].product.color,
-  //     date: orderState[i].product.createdAt,
-  //     action: (
-  //       <>
-  //         <Link to="/" className=" fs-3 text-danger">
-  //           <BiEdit />
-  //         </Link>
-  //         <Link className="ms-3 fs-3 text-danger" to="/">
-  //           <AiFillDelete />
-  //         </Link>
-  //       </>
-  //     ),
-  //   });
-  // }
+
   return (
     <div>
       <h3 className="mb-4 title">View Order</h3>
