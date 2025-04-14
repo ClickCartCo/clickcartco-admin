@@ -1,6 +1,5 @@
 import axios from "axios";
 import { getAxiosConfig } from "../../utils/axiosconfig";
-import { base_url, local_url } from "../../utils/baseUrl";
 const login = async (user) => {
   const response = await axios.post(
     `${process.env.REACT_APP_API_BASE_URL}/api/user/login`,
@@ -12,13 +11,16 @@ const login = async (user) => {
   return response.data;
 };
 const getOrders = async () => {
-  const response = await axios.get(`${base_url}api/order/`, getAxiosConfig());
+  const response = await axios.get(
+    `${process.env.REACT_APP_API_BASE_URL}api/order/`,
+    getAxiosConfig()
+  );
 
   return response.data;
 };
 const getOrder = async (id) => {
   const response = await axios.get(
-    `${base_url}api/order/${id}`,
+    `${process.env.REACT_APP_API_BASE_URL}api/order/${id}`,
     "",
     getAxiosConfig()
   );
@@ -28,7 +30,7 @@ const getOrder = async (id) => {
 
 const updateOrder = async (id, payload) => {
   const response = await axios.post(
-    `${base_url}api/order/${id}`,
+    `${process.env.REACT_APP_API_BASE_URL}api/order/${id}`,
     payload,
     getAxiosConfig()
   );
