@@ -27,8 +27,8 @@ const MainLayout = () => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo">
           <h2 className="text-white fs-5 text-center py-3 mb-0">
-            <span className="sm-logo">CX</span>
-            <span className="lg-logo">CostcoX Admin</span>
+            <span className="sm-logo">CC</span>
+            <span className="lg-logo">ClickCartCo Admin</span>
           </h2>
         </div>
         <Menu
@@ -67,7 +67,7 @@ const MainLayout = () => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">CostcoX Admin</h5>
+                <h5 className="mb-0">ClickCartCo Admin</h5>
                 <p className="mb-0">cosctcox@admin.com</p>
               </div>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
