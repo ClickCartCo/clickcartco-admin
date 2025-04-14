@@ -333,8 +333,8 @@ const OrderDetails = () => {
                       >
                         <option value="pending">Pending</option>
                         <option value="shipped">Shipped</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="returned">Returned</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="refunded">Refunded</option>
                       </select>
                       <button
                         className="btn btn-primary mt-2"
