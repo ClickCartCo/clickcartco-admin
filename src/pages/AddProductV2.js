@@ -54,6 +54,7 @@ const AddProductV2 = () => {
       }
       setStep(1);
       toast.success("Product Added Successfullly!");
+      localStorage.removeItem("productFormData");
       dispatch(resetState());
     }
     if (isError) {
@@ -79,6 +80,12 @@ const AddProductV2 = () => {
   }, [step]);
 
   useEffect(() => {
+    const shouldUpdate =
+      (specificationValue && Object.keys(specificationValue).length > 0) ||
+      (productAttr && productAttr.length > 0);
+
+    if (!shouldUpdate) return;
+
     const productFormData = {
       ...JSON.parse(localStorage.getItem("productFormData") || "{}"),
       specifications: specificationValue,
