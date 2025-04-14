@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "../../utils/axiosconfig";
+import { getAxiosConfig } from "../../utils/axiosconfig";
 import { base_url, local_url } from "../../utils/baseUrl";
 const login = async (user) => {
   const response = await axios.post(
@@ -12,12 +12,16 @@ const login = async (user) => {
   return response.data;
 };
 const getOrders = async () => {
-  const response = await axios.get(`${base_url}api/order/`, config);
+  const response = await axios.get(`${base_url}api/order/`, getAxiosConfig());
 
   return response.data;
 };
 const getOrder = async (id) => {
-  const response = await axios.get(`${base_url}api/order/${id}`, "", config);
+  const response = await axios.get(
+    `${base_url}api/order/${id}`,
+    "",
+    getAxiosConfig()
+  );
 
   return response.data;
 };
@@ -26,7 +30,7 @@ const updateOrder = async (id, payload) => {
   const response = await axios.post(
     `${base_url}api/order/${id}`,
     payload,
-    config
+    getAxiosConfig()
   );
   return response.data;
 };

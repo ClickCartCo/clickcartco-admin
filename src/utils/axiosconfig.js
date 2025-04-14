@@ -1,15 +1,12 @@
-const getTokenFromLocalStorage = localStorage.getItem("user")
-  ? JSON.parse(localStorage.getItem("user"))
-  : null;
+export const getAxiosConfig = () => {
+  const user = localStorage.getItem("user");
+  const token = user ? JSON.parse(user).accessToken : "";
 
-export const config = {
-  headers: {
-    Authorization: `Bearer ${
-      getTokenFromLocalStorage !== null
-        ? getTokenFromLocalStorage.accessToken
-        : ""
-    }`,
-    Accept: "application/json",
-  },
-  timeout: 10000,
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    timeout: 10000,
+  };
 };

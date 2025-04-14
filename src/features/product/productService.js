@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "../../utils/axiosconfig";
+import { getAxiosConfig } from "../../utils/axiosconfig";
 
 const getProducts = async () => {
   const response = await axios.get(
@@ -19,7 +19,7 @@ const getProductDetails = async (productId) => {
 
 const createProduct = async (product) => {
   const originalUrl = `${process.env.REACT_APP_API_BASE_URL}/api/product/create-product`;
-  const response = await axios.post(originalUrl, product, config);
+  const response = await axios.post(originalUrl, product, getAxiosConfig());
   console.log("Response", response);
   return response.data;
 };
@@ -27,7 +27,11 @@ const createProduct = async (product) => {
 const updateProduct = async (payload) => {
   const { productId, updatedProductInfo } = payload;
   const remote = `${process.env.REACT_APP_API_BASE_URL}/api/product/update-product/${productId}`;
-  const response = await axios.put(remote, { updatedProductInfo }, config);
+  const response = await axios.put(
+    remote,
+    { updatedProductInfo },
+    getAxiosConfig()
+  );
 
   return response.data;
 };
@@ -35,7 +39,7 @@ const updateProduct = async (payload) => {
 const deleteProduct = async (productId) => {
   const response = await axios.delete(
     `${process.env.REACT_APP_API_BASE_URL}/api/product/delete-product/${productId}`,
-    config
+    getAxiosConfig()
   );
   return response.data;
 };
