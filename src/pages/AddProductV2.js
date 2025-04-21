@@ -37,11 +37,49 @@ const AddProductV2 = () => {
       }
     }
 
+    const interval = setInterval(() => {
+      const formik = formRef.current;
+      if (
+        formik &&
+        formik.values &&
+        Array.isArray(formik.values.customRatings)
+      ) {
+        const totalCustomers = formik.values.customRatings.reduce(
+          (acc, curr) => {
+            const num = Number(curr.noOfCustomer);
+            return acc + (isNaN(num) ? 0 : num);
+          },
+          0
+        );
+
+        const updatedRatings = formik.values.customRatings.map((rating) => {
+          const num = Number(rating.noOfCustomer);
+          const percentage =
+            totalCustomers > 0
+              ? parseFloat(((num / totalCustomers) * 100).toFixed(2))
+              : 0;
+          return {
+            ...rating,
+            percentage,
+          };
+        });
+
+        // Only update if there's a change to avoid unnecessary rerenders
+        const hasChanges =
+          JSON.stringify(formik.values.customRatings) !==
+          JSON.stringify(updatedRatings);
+        if (hasChanges) {
+          formik.setFieldValue("customRatings", updatedRatings);
+        }
+      }
+    }, 500);
+
     const isPageRefreshed = sessionStorage.getItem("isPageRefreshed");
     return () => {
       if (!isPageRefreshed) {
         localStorage.removeItem("productFormData");
       }
+      clearInterval(interval);
     };
   }, []);
 
@@ -234,6 +272,7 @@ const AddProductV2 = () => {
                                 placeholder="Percentage"
                                 type="number"
                                 className="form-control ms-2"
+                                readOnly
                               />
                               <Field
                                 name={`customRatings.${index}.noOfCustomer`}
