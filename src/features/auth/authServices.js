@@ -12,7 +12,7 @@ const login = async (user) => {
 };
 const getOrders = async () => {
   const response = await axios.get(
-    `${process.env.REACT_APP_API_BASE_URL}api/order/`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/order/`,
     getAxiosConfig()
   );
 
@@ -20,7 +20,7 @@ const getOrders = async () => {
 };
 const getOrder = async (id) => {
   const response = await axios.get(
-    `${process.env.REACT_APP_API_BASE_URL}api/order/${id}`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/order/${id}`,
     "",
     getAxiosConfig()
   );
@@ -30,7 +30,7 @@ const getOrder = async (id) => {
 
 const updateOrder = async (id, payload) => {
   const response = await axios.post(
-    `${process.env.REACT_APP_API_BASE_URL}api/order/${id}`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/order/${id}`,
     payload,
     getAxiosConfig()
   );
