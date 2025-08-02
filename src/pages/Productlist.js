@@ -43,7 +43,23 @@ const Productlist = () => {
     dispatch(getProducts());
   }, []);
 
-  const productState = useSelector((state) => state.product.products);
+  const {
+    products: productState,
+    isLoading,
+    isSuccess,
+    isError,
+    message,
+  } = useSelector((state) => state.product);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(message || "Product fetched successfully");
+    }
+    if (isError) {
+      toast.error(message);
+    }
+  }, [isSuccess, isError, message, dispatch]);
+
   const data1 = [];
   for (let i = 0; i < productState.length; i++) {
     data1.push({
@@ -60,12 +76,19 @@ const Productlist = () => {
           >
             <BiEdit />
           </Link>
-          <Link
+          <button
             className="ms-3 fs-3 text-danger"
             onClick={() => dispatch(deleteProduct(productState[i]._id))}
+            style={{
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+            disabled={isLoading}
           >
             <AiFillDelete />
-          </Link>
+          </button>
         </>
       ),
     });

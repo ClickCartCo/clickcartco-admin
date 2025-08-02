@@ -5,64 +5,46 @@ import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { getOrders } from "../features/auth/authSlice";
+
 const columns = [
-  {
-    title: "SNo",
-    dataIndex: "key",
-  },
-  {
-    title: "Order Details",
-    dataIndex: "items",
-  },
-  {
-    title: "User Email",
-    dataIndex: "userEmail",
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-  },
+  { title: "SNo", dataIndex: "key" },
+  { title: "Order Details", dataIndex: "items" },
+  { title: "User Email", dataIndex: "userEmail" },
+  { title: "Amount", dataIndex: "amount" },
+  { title: "Date", dataIndex: "date" },
   { title: "Payment Success", dataIndex: "paymentSuccess" },
-  {
-    title: "View Order",
-    dataIndex: "product",
-  },
-  {
-    title: "Action",
-    dataIndex: "action",
-  },
+  { title: "View Order", dataIndex: "product" },
+  { title: "Action", dataIndex: "action" },
 ];
 
 const Orders = () => {
   const dispatch = useDispatch();
+  const orderState = useSelector((state) => state.auth.orders) || [];
+
   useEffect(() => {
     dispatch(getOrders());
-  }, []);
-  const orderState = useSelector((state) => state.auth.orders);
+  }, [dispatch]);
 
-  const data1 = [];
-  for (let i = 0; i < orderState.length; i++) {
-    const itemsLength = orderState[i]?.items?.length;
-    data1.push({
-      key: i + 1,
+  const data1 = orderState.map((order, index) => {
+    const items = order?.items || [];
+    const firstItem = items[0];
+    const productTitle = firstItem?.product?.title || "N/A";
+    const itemsLength = items.length;
+
+    return {
+      key: index + 1,
       items:
         itemsLength > 1
-          ? `${orderState[i].items[0].product.title}+${itemsLength}`
-          : orderState[i].items[0].product.title,
-      userEmail: orderState[i].userEmail,
-      amount: orderState[i].totalAmount,
-      date: new Date(orderState[i].createdAt).toLocaleString(),
-      paymentSuccess: orderState[i].paymentSuccess,
-      product: (
-        <Link to={`/admin/order/${orderState[i]._id}`}>View Orders</Link>
-      ),
+          ? `${productTitle} + ${itemsLength - 1} more`
+          : productTitle,
+      userEmail: order?.userEmail || "N/A",
+      amount: order?.totalAmount ?? "N/A",
+      date: new Date(order?.createdAt).toLocaleString(),
+      paymentSuccess: order?.paymentSuccess ? "Yes" : "No",
+      product: <Link to={`/admin/order/${order?._id}`}>View Orders</Link>,
       action: (
         <>
-          <Link to="/" className=" fs-3 text-danger">
+          <Link to="/" className="fs-3 text-danger">
             <BiEdit />
           </Link>
           <Link className="ms-3 fs-3 text-danger" to="/">
@@ -70,12 +52,15 @@ const Orders = () => {
           </Link>
         </>
       ),
-    });
-  }
+    };
+  });
+
   return (
     <div>
       <h3 className="mb-4 title">Orders</h3>
-      <div>{<Table columns={columns} dataSource={data1} />}</div>
+      <div>
+        <Table columns={columns} dataSource={data1} />
+      </div>
     </div>
   );
 };

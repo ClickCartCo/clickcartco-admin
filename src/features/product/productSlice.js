@@ -141,16 +141,18 @@ export const productSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
+        const productId = action.meta.arg;
         state.isLoading = false;
         state.isError = false;
         state.isSuccess = true;
-        state.deleteProduct = action.payload;
+        state.deleteProduct = "Product deleted successfully";
+        state.products = state.products.filter((p) => p._id !== productId);
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
-        state.message = action.error;
+        state.message = "Error deleting product";
       })
       .addCase(resetState, () => initialState);
   },
